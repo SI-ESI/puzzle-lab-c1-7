@@ -42,9 +42,3 @@ test1(vector_estados)
 
 
 
-#Prueba branch Tarea 1
-
-print("esto es una prueba 2")
-
-
-
