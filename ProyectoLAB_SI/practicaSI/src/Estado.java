@@ -21,8 +21,8 @@ public class Estado {
 		return botella;
 	}
 
-	public void setBotella(ArrayList<Botella> botella) {
-		this.botella = botella;
+	public void setBotella(Botella bot) {
+		botella.add(bot);
 	}
 	
 	//Método para clonar el estado, utilizamos el constructor para clonarlo con una lista auxiliar
