@@ -6,7 +6,6 @@ public class Main {
     }
 
     public static void mostrarMenu() {
-        //En el apartado 5 del men� hemos cambiado el numero de referencia de 5 a 3, despu�s de consultarlo con nuestro profesor de teoria Manuel Ortega Cantero.
         System.out.println();
         System.out.println("Elija una opción:");
         System.out.println("1- Anchura");
