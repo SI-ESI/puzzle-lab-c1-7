@@ -12,6 +12,13 @@ public class Botella {
         pilaColores = new Stack<Color>();
         cantidadOcupada = 0;
     }
+    
+    public Botella(Botella b) {
+		this.idBotella = b.getIdBotella();
+		this.cantidadMax = b.getCantidadMax();
+		cantidadOcupada = b.getCantidadOcupada();
+		pilaColores = copiarPila(b.getPilaColores());
+	}
 
     private Stack<Color> copiarPila(Stack<Color> pilaOrigen) {
         Stack<Color> aux = new Stack<Color>();
@@ -29,7 +36,7 @@ public class Botella {
     }
 
     public void incrementarColor(int idColor, int cantidad) {
-        //Comprobamos que la pila no esta vacía.
+        //Comprobamos que la pila no esta vacia.
         //Hemos cambiado el if por si salta una excepción al manipular la pila y está vacía.
         if (!pilaColores.empty() && idColor == pilaColores.peek().getId()) {
                 pilaColores.peek().incrementarCantidad(cantidad);
@@ -63,4 +70,13 @@ public class Botella {
     public void setCantidadOcupada(int cantidad) {
         cantidadOcupada = cantidad;
     }
+
+	public Stack<Color> getPilaColores() {
+		return pilaColores;
+	}
+
+	public void setPilaColores(Stack<Color> pilaColores) {
+		this.pilaColores = pilaColores;
+	}
+    
 }

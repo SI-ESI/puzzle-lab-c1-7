@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 public class Main {
     final static Scanner TECLADO = new Scanner(System.in);
@@ -7,12 +9,12 @@ public class Main {
 
     public static void mostrarMenu() {
         System.out.println();
-        System.out.println("Elija una opción:");
+        System.out.println("Elija una opcion:");
         System.out.println("1- Anchura");
         System.out.println("2- Profundidad");
-        System.out.println("3- Búsqueda Uniforme");
-        System.out.println("4- Búsqueda Greedy");
-        System.out.println("5- Búsqueda A");
+        System.out.println("3- Busqueda Uniforme");
+        System.out.println("4- Busqueda Greedy");
+        System.out.println("5- Busqueda A");
         System.out.println("6- Salir");
         System.out.println();
     }
@@ -51,4 +53,7 @@ public class Main {
 			}
         } while(!opcionSalir);
     }
+    
 }
+
+
