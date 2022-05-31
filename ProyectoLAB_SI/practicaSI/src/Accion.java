@@ -37,8 +37,8 @@ public class Accion {
 
 	@Override
 	public String toString() {
-		return "Accion [botella_origen=" + botella_origen + ", botella_destino=" + botella_destino + ", cantidad="
-				+ cantidad + "]";
+		return "(" + botella_origen + ", " + botella_destino + ", "
+				+ cantidad + ")";
 	}
 	
 	

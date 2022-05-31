@@ -29,7 +29,7 @@ public class Problema {
 	}
 	@Override
 	public String toString() {
-		return "Problema [idProblema=" + idProblema + ", capacidadBot=" + capacidadBot + ", estadoInicial="
+		return "Problema [idProblema=" + idProblema + ", Tamaño botellas=" + capacidadBot + ", estadoInicial="
 				+ estadoInicial + "]";
 	}
 	

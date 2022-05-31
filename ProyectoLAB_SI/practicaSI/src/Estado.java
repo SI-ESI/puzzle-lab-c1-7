@@ -56,8 +56,6 @@ public class Estado {
 		return cantDisponible;
 		
 	}
-	
-	
 
 	public Estado Accion(Botella botella_origen, Botella botella_destino, int cantidad) {	
 		Estado nuevoEstado = null;
@@ -66,6 +64,11 @@ public class Estado {
 		botella_destino.incrementarColor(botella_origen.getPilaColores().peek().getId(), cantidad);
 		botella_origen.decrementarColor(cantidad);
 		return nuevoEstado;
+	}
+	
+	public String toString() {
+		String contenido = botella.toString();
+		return contenido.replaceAll(" ", "");
 	}
 
 }

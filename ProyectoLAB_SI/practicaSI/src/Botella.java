@@ -82,5 +82,9 @@ public class Botella {
 			cantidadOcupada += pilaColores.get(i).getCantidad();
 		}
 	}
+	
+	public String toString() {
+		return pilaColores.toString();
+	}
     
 }

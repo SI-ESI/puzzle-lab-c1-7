@@ -1,9 +1,16 @@
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 public class Main {
     final static Scanner TECLADO = new Scanner(System.in);
     
@@ -11,10 +18,18 @@ public class Main {
 	final static int costo = 1;
 	
     public static void main(String[] args) throws Exception {
-        seleccionEstrategia();
+    	
+    	ArrayList<Problema> listaProblemas;
+    	listaProblemas = leerFichero();
+    	for (Problema p : listaProblemas) {
+    		System.out.println(p.toString());
+    		Estado estado =  p.getEstadoInicial();
+    		seleccionEstrategia(estado);
+    	}
+    	
     }
 
-    public static void mostrarMenu() {
+	public static void mostrarMenu() {
         System.out.println();
         System.out.println("Elija una opcion:");
         System.out.println("1- Anchura");
@@ -26,9 +41,13 @@ public class Main {
         System.out.println();
     }
 
-    public static void seleccionEstrategia () {
+    public static void seleccionEstrategia (Estado estado) {
         boolean opcionSalir = false;
         int opcionMenu;
+        
+        List<Nodo> solucion;
+        Nodo nodoS;
+        List<String> solucion_final;
 
         do {
             mostrarMenu();
@@ -36,7 +55,13 @@ public class Main {
 
             switch(opcionMenu) {
                 case 1:
-                break;
+                	nodoS = busquedaAnchura(estado);
+        			solucion = generarSolucion(nodoS);
+        			solucion_final = stringSolucion(solucion);
+        			exportar(solucion_final);
+        			System.out.println("Solucion generada");
+        			
+        			break;
 
                 case 2:
                 break;
@@ -60,9 +85,81 @@ public class Main {
 			}
         } while(!opcionSalir);
     }
+    
 
     
-    private static ArrayList<Problema> leerFichero() {
+    private static void exportar(List<String> solucion_final) {
+    	int i;
+		FileWriter datofl = null;
+		try {
+			datofl = new FileWriter("resultados.txt");
+			BufferedWriter bfwdato = new BufferedWriter(datofl);// crea un buffer
+			for (i = 0; i < solucion_final.size(); i++) {
+				bfwdato.write(solucion_final.get(i).toString() + "\n");
+			}
+			bfwdato.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (datofl != null) {
+				try {
+					datofl.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+	}
+
+	private static List<String> stringSolucion(List<Nodo> solucion) {
+		List<String> sol = null;
+		String stringSolucion;
+		
+		for(Nodo nAux :  solucion) {
+			if (nAux.getId_padre() == null) {
+				stringSolucion = "[" + nAux.getId() + "][" + String.format("%.1f", nAux.getCosto()) + "," + md5(nAux.getEstado().toString())
+                + ",None,None," + nAux.getProfundidad() + "," + String.format("%.2f", nAux.getHeuristica()) + ","
+                + String.format("%.2f", nAux.getValor()) + "]";;
+			} else {
+				stringSolucion = "[" + nAux.getId() + "][" + String.format("%.1f", nAux.getCosto()) + "," + md5(nAux.getEstado().toString()) + ","
+						+ nAux.getId_padre().getId() + "," + nAux.getAccion().toString() + "," + nAux.getProfundidad() + ","
+						+ String.format("%.2f", nAux.getHeuristica()) + "," + String.format("%.2f", nAux.getValor()) + "]";;
+			}
+			sol.add(stringSolucion);
+		}
+		
+		return sol;
+	}
+
+	private static String md5(String input) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			byte[] messageDigest = md.digest(input.getBytes());
+			BigInteger no = new BigInteger(1, messageDigest);
+			String hashtext = no.toString(16);
+			while (hashtext.length() < 32) {
+				hashtext = "0" + hashtext;
+			}
+			return hashtext;
+			
+		} catch (NoSuchAlgorithmException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static List<Nodo> generarSolucion(Nodo nodoS) {
+    	List<Nodo> solucion = null;
+    	
+    	do {
+    		nodoS = nodoS.getId_padre();
+    		solucion.add(nodoS);
+    	}while(nodoS.getId() != 0);
+    	
+		return solucion;
+	}
+
+	private static ArrayList<Problema> leerFichero() {
     	String fichero = "Estados.txt";
     	Problema problemaInicial;
     	ArrayList<Problema> listaProblemas = null;
@@ -138,8 +235,8 @@ public class Main {
 		return pila;
 	}
 	
-	private static PriorityQueue<Sucesor> Sucesores(Estado estadoInicial) {
-		PriorityQueue<Sucesor> sucesores = null;
+	private static ArrayList<Sucesor> Sucesores(Estado estadoInicial) {
+		ArrayList<Sucesor> sucesores = null;
 		
 		for (Botella botellaOrigen : estadoInicial.getBotella()) {
 			for (Botella botellaDestino : estadoInicial.getBotella()) {
@@ -155,6 +252,139 @@ public class Main {
 		}
 		return sucesores;
 	}
+	  
+	public static int expandir(Nodo nodo, Frontera frontera, int ultimoNodo, String estrategia) {
+		ArrayList<Sucesor> nuevas_acciones = Sucesores(nodo.getEstado());
+		for (int i = 0; i < nuevas_acciones.size(); i++) {
+			ultimoNodo++;
+			Nodo n = new Nodo();
+			n.setId(ultimoNodo);
+			n.setId_padre(n);
+			n.setEstado(nuevas_acciones.get(i).getNuevoEstado());
+			n.setAccion(nuevas_acciones.get(i).getAccion());
+			n.setProfundidad(n.getProfundidad() + 1);
+			n.setHeuristica(Heuristica(n));
+			n.setCosto(n.getCosto() + 1.0);
+			if (estrategia.equals("Profundidad")) {
+				n.setValor(n.getProfundidad());
+			}
+			if (estrategia.equals("Anchura")) {
+				n.setValor(1 / (n.getProfundidad() + 1));
+			}
+			if (estrategia.equals("Uniforme")) {
+				n.setValor(n.getCosto());
+			}
+			if (estrategia.equals("Voraz")) {
+
+				n.setValor(n.getHeuristica());
+			}
+			if (estrategia.equals("A")) {
+
+				n.setValor(n.getHeuristica() + n.getCosto());
+			}
+			
+			frontera.pushN(n);
+		}
+		return ultimoNodo;
+	}
+
+	private static double Heuristica(Nodo n) {
+		ArrayList<Botella> botellas = n.getEstado().getBotella();
+		ArrayList<Integer> visitados = null;
+		
+		int heuristica = 0;
+		
+		for (Botella b : botellas) {
+			if (b.getCantidadOcupada() == 0) {
+				heuristica ++;
+			} else {
+				heuristica +=b.getPilaColores().size();
+				if(visitados.contains(b.getPilaColores().peek().getId())) {
+					heuristica ++;
+				}else {
+					visitados.add(b.getPilaColores().peek().getId());
+				}
+			}
+		}
+		return heuristica - botellas.size();
+	}
+	
+
+	public static Nodo busquedaAnchura(Estado e) {
+		Nodo solucion = null;
+		Nodo nodoAux;
+		Estado estadoAux;
+		ArrayList<Nodo> nodos = new ArrayList<Nodo>();
+		Frontera frontera = new Frontera(nodos);
+		List<Botella> botellas;
+		List<List<Botella>> listaVisitados = new ArrayList<List<Botella>>();
+
+		int idNodo = 0;
+		frontera.pushN(new Nodo(0, 0.0, e, null, null, 0, 0, 1));
+		while (!frontera.getFrontera().isEmpty()) {
+			nodoAux = frontera.getFrontera().get(0);
+			nodoAux.setHeuristica(Heuristica(nodoAux));
+
+			frontera.getFrontera().remove(0);
+			estadoAux = nodoAux.getEstado();
+			botellas = estadoAux.getBotella();
+			List<Botella> estadoClonado = new ArrayList<>();
+			estadoClonado = e.clonarEstado().getBotella();
+			if (objetivo(estadoAux)) {
+				solucion = nodoAux;
+
+				break;
+			} else {
+				if (listaVisitados.isEmpty()) {
+					listaVisitados.add(estadoClonado);
+					idNodo = expandir(nodoAux, frontera, idNodo, "Profundidad");
+				} else {
+					if (visitado(listaVisitados, estadoClonado, 0) == false) {
+						listaVisitados.add(estadoClonado);
+						idNodo = expandir(nodoAux, frontera, idNodo, "Profundidad");
+					}
+				}
+			}
+		}
+
+		return solucion;
+	}
+	
+	private static boolean objetivo(Estado estadoAux) {
+		List<Botella> listaBot = estadoAux.getBotella();
+		List<Integer> listaIdColores = null;
+		
+		for( Botella botella : listaBot) {
+			if (botella.getPilaColores().size() > 1) {
+				return false;
+			}
+			if(botella.getCantidadOcupada() > 0) {
+				if(listaIdColores.contains(botella.getPilaColores().peek().getId())) {
+					return false;
+				} else {
+					listaIdColores.add(botella.getPilaColores().peek().getId());
+				}
+			}
+		}
+		
+		return true;
+		
+	}
+
+	private static boolean visitado(List<List<Botella>> listaVisitados, List<Botella> estadoClonado, int i) {
+		boolean visitado = false;
+		boolean estadoV = true;
+		int cantidadActual = 0;
+		int cantidad = 0;
+		
+		for (Botella b : estadoClonado) {
+			cantidadActual += b.getCantidadOcupada();
+		}
+		
+		return visitado;
+		
+	}
+
 }
 
 
