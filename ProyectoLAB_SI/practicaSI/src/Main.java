@@ -21,7 +21,9 @@ public class Main {
     	
     	ArrayList<Problema> listaProblemas;
     	listaProblemas = leerFichero();
-    	for (Problema p : listaProblemas) {
+
+        for (Problema p : listaProblemas) {
+            
     		System.out.println(p.toString());
     		Estado estado =  p.getEstadoInicial();
     		seleccionEstrategia(estado);
@@ -60,7 +62,6 @@ public class Main {
         			solucion_final = stringSolucion(solucion);
         			exportar(solucion_final);
         			System.out.println("Solucion generada");
-        			
         			break;
 
                 case 2:
@@ -81,7 +82,7 @@ public class Main {
                 break;
 
                 default:
-                    System.out.println("Opción incorrecta...");
+                    System.out.println("OpciÃ³n incorrecta...");
 			}
         } while(!opcionSalir);
     }
@@ -113,7 +114,9 @@ public class Main {
 	}
 
 	private static List<String> stringSolucion(List<Nodo> solucion) {
-		List<String> sol = null;
+		List<String> sol = new ArrayList<String>() {
+            
+        };
 		String stringSolucion;
 		
 		for(Nodo nAux :  solucion) {
@@ -148,34 +151,40 @@ public class Main {
 		}
 	}
 
+    //SE QUEDA EN UN BUCLE CONSTANTE 
 	private static List<Nodo> generarSolucion(Nodo nodoS) {
-    	List<Nodo> solucion = null;
+    	List<Nodo> solucion = new ArrayList<Nodo>();
+        int cont = 0;
     	
     	do {
     		nodoS = nodoS.getId_padre();
     		solucion.add(nodoS);
-    	}while(nodoS.getId() != 0);
+            cont++;
+            //AQUIIIIIIIIIIIIII HAY PROBLEMAS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        } while(nodoS.getId() != 0 && cont <= 30);
     	
 		return solucion;
 	}
 
 	private static ArrayList<Problema> leerFichero() {
-    	String fichero = "Estados.txt";
+    	String fichero = "C:/Users/aleja/Documents/ProyectosEclipse/Sistemas_Inteligentes/ProyectoLAB_SI/practicaSI/include/problemas2.txt";
     	Problema problemaInicial;
-    	ArrayList<Problema> listaProblemas = null;
+    	ArrayList<Problema> listaProblemas = new ArrayList<Problema>();
     	
     	try {
-    		Scanner leer = new Scanner(new File(fichero)); 
-    		while (leer.hasNext()) {
+            Scanner leer = new Scanner(new File(fichero));
+            while (leer.hasNext()) {
     			String lineaMal = leer.nextLine(); 
     			String linea = lineaMal.replaceAll(" ", ""); //Eliminamos los espacios en blanco
-    			problemaInicial = generarProblema(linea);
+                problemaInicial = generarProblema(linea);
     			if (problemaInicial != null) {
     				listaProblemas.add(problemaInicial);
-    			}
+    			} /*else {
+                    System.out.println("El problema es null");
+                }*/
     		}
     		leer.close();
-    	} catch (FileNotFoundException e) {// Excepci�n si no encuentra el fichero
+    	} catch (FileNotFoundException e) {// Excepción si no encuentra el fichero
     		System.out.println(e.getMessage() + "Fichero no encontrado");
     		System.exit(1);
     	}
@@ -190,9 +199,9 @@ public class Main {
 			String id = Jproblema.getString("id");
 			int tamBotella = Jproblema.getInt("bottleSize");
 			String estadoInicial = Jproblema.getJSONArray("initState").toString();
-			
+            			
 			Estado estado = generarEstado(estadoInicial, tamBotella);
-			problema = new Problema(id, tamBotella, estado);
+            problema = new Problema(id, tamBotella, estado);
 			return problema;
 		} catch (Exception e) {
 			return null;
@@ -227,7 +236,7 @@ public class Main {
     
 	private static Stack<Color> invertirPila(Stack<Color> pilaAux) {
 		
-		Stack<Color> pila = null ;
+		Stack<Color> pila = new Stack<Color>();
 		while (!pilaAux.empty()){
 			pila.add(pilaAux.pop());
 		}
@@ -236,7 +245,7 @@ public class Main {
 	}
 	
 	private static ArrayList<Sucesor> Sucesores(Estado estadoInicial) {
-		ArrayList<Sucesor> sucesores = null;
+		ArrayList<Sucesor> sucesores = new ArrayList<Sucesor>();
 		
 		for (Botella botellaOrigen : estadoInicial.getBotella()) {
 			for (Botella botellaDestino : estadoInicial.getBotella()) {
@@ -290,7 +299,7 @@ public class Main {
 
 	private static double Heuristica(Nodo n) {
 		ArrayList<Botella> botellas = n.getEstado().getBotella();
-		ArrayList<Integer> visitados = null;
+		ArrayList<Integer> visitados = new ArrayList<Integer>();
 		
 		int heuristica = 0;
 		
@@ -317,7 +326,7 @@ public class Main {
 		ArrayList<Nodo> nodos = new ArrayList<Nodo>();
 		Frontera frontera = new Frontera(nodos);
 		List<Botella> botellas;
-		List<List<Botella>> listaVisitados = new ArrayList<List<Botella>>();
+		List<String> listaVisitados = new ArrayList<String>();
 
 		int idNodo = 0;
 		frontera.pushN(new Nodo(0, 0.0, e, null, null, 0, 0, 1));
@@ -336,13 +345,17 @@ public class Main {
 				break;
 			} else {
 				if (listaVisitados.isEmpty()) {
-					listaVisitados.add(estadoClonado);
+					listaVisitados.add(md5(estadoClonado.toString()));
 					idNodo = expandir(nodoAux, frontera, idNodo, "Profundidad");
 				} else {
-					if (visitado(listaVisitados, estadoClonado, 0) == false) {
-						listaVisitados.add(estadoClonado);
-						idNodo = expandir(nodoAux, frontera, idNodo, "Profundidad");
-					}
+					
+					if (!listaVisitados.contains(md5(nodoAux.getEstado().toString()))) {
+                        listaVisitados.add(md5(nodoAux.getEstado().toString()));
+
+                        if (nodoAux.getProfundidad() < profundidadMaxima) {
+                            idNodo = expandir(nodoAux, frontera, idNodo, "Profundidad");
+                        }
+                    }
 				}
 			}
 		}
@@ -352,13 +365,13 @@ public class Main {
 	
 	private static boolean objetivo(Estado estadoAux) {
 		List<Botella> listaBot = estadoAux.getBotella();
-		List<Integer> listaIdColores = null;
+		List<Integer> listaIdColores = new ArrayList<Integer>();
 		
 		for( Botella botella : listaBot) {
 			if (botella.getPilaColores().size() > 1) {
 				return false;
 			}
-			if(botella.getCantidadOcupada() > 0) {
+			if(botella.getCantidadOcupada() > 0 && !listaIdColores.isEmpty()) {
 				if(listaIdColores.contains(botella.getPilaColores().peek().getId())) {
 					return false;
 				} else {
@@ -371,7 +384,7 @@ public class Main {
 		
 	}
 
-	private static boolean visitado(List<List<Botella>> listaVisitados, List<Botella> estadoClonado, int i) {
+	/*private static boolean visitado(List<List<Botella>> listaVisitados, List<Botella> estadoClonado, int i) {
 		boolean visitado = false;
 		boolean estadoV = true;
 		int cantidadActual = 0;
@@ -383,8 +396,6 @@ public class Main {
 		
 		return visitado;
 		
-	}
+	}*/
 
 }
-
-

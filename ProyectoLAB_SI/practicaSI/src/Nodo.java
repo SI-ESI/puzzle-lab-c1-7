@@ -1,4 +1,3 @@
-
 public class Nodo {
 	private int id;
 	private double costo;

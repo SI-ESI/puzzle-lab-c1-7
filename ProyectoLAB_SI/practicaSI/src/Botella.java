@@ -77,10 +77,11 @@ public class Botella {
 
 	public void setPilaColores(Stack<Color> pilaColores) {
 		this.pilaColores = pilaColores;
-		cantidadOcupada = 0;
+		int cantidadO = 0;
 		for (int i = 0; i < pilaColores.size(); i++) {
-			cantidadOcupada += pilaColores.get(i).getCantidad();
+			cantidadO += pilaColores.get(i).getCantidad();
 		}
+        cantidadOcupada = cantidadO;
 	}
 	
 	public String toString() {

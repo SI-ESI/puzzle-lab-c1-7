@@ -1,4 +1,3 @@
-
 public class Problema {
 	private String idProblema;
 	private int capacidadBot;
@@ -29,7 +28,7 @@ public class Problema {
 	}
 	@Override
 	public String toString() {
-		return "Problema [idProblema=" + idProblema + ", Tamaño botellas=" + capacidadBot + ", estadoInicial="
+		return "Problema [idProblema=" + idProblema + ", TamaÃ±o botellas=" + capacidadBot + ", estadoInicial="
 				+ estadoInicial + "]";
 	}
 	

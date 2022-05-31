@@ -1,4 +1,3 @@
-
 public class Accion {
 	private int botella_origen;
 	private int botella_destino;

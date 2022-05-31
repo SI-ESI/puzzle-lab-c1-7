@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.List;
 
 public class Estado {
 	private ArrayList<Botella> botella;
@@ -25,7 +24,7 @@ public class Estado {
 		botella.add(bot);
 	}
 	
-	//Método para clonar el estado, utilizamos el constructor para clonarlo con una lista auxiliar
+	//MÃ©todo para clonar el estado, utilizamos el constructor para clonarlo con una lista auxiliar
 	
 	public Estado clonarEstado() {
 		return new Estado(this);
@@ -72,4 +71,3 @@ public class Estado {
 	}
 
 }
-
